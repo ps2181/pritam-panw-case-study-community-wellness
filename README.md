@@ -19,8 +19,7 @@ Here is the finalized `README.md` for your submission. I have restructured the t
 ---
 
 Quick Start 
-
-* 
+ 
 **Prerequisites:** 
 
 
@@ -29,7 +28,7 @@ Quick Start
 * Node.js v16+ (required for running tests only).
 
 
-* 
+  
 **Run Commands:** 
 
 
@@ -37,7 +36,7 @@ Quick Start
 * **Option B:** Run `python3 -m http.server 8080` and visit `http://localhost:8080`.
 
 
-* 
+  
 **Test Commands:** 
 
 
@@ -49,11 +48,11 @@ Quick Start
 
 AI Disclosure 
 
-* 
+
 **Did you use an AI assistant (Copilot, ChatGPT, etc.)?** Yes 
 
 
-* 
+
 **How did you verify the suggestions?** 
 
 
@@ -61,7 +60,7 @@ AI Disclosure
 * I wrote an independent test suite to validate logic; this caught a keyword priority bug in the categorizer that the AI missed.
 
 
-* 
+  
 **Give one example of a suggestion you rejected or changed:** 
 
 
@@ -75,7 +74,7 @@ AI Disclosure
 
 Tradeoffs & Prioritization 
 
-* 
+
 **What did you cut to stay within the 4–6 hour limit?** 
 
 
@@ -84,7 +83,7 @@ Tradeoffs & Prioritization
 * **Push Notifications:** UI toggles are functional, but the browser Notification API integration was deferred.
 
 
-* 
+  
 **What would you build next if you had more time?** 
 
 
@@ -92,7 +91,7 @@ Tradeoffs & Prioritization
 * **Geofenced Alerts:** Using the browser Geolocation API to send alerts only for incidents within a 1-mile radius.
 
 
-* 
+  
 **Known limitations:** 
 
 
@@ -136,7 +135,7 @@ Test Coverage
 
 Data Safety & Security 
 
-* 
+
 **Synthetic Data:** All data in `incidents.json` is fabricated (fake neighborhoods, fake scams). 
 
 
