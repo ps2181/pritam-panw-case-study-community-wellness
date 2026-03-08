@@ -257,7 +257,7 @@ Claude initially suggested using a `<form>` element with `action=""` for the rep
 
 ## Video Walkthrough
 
-[Link to be added before submission — YouTube/Vimeo unlisted link]
+https://youtu.be/woHuJkc0f_A
 
 The video covers:
 1. Problem statement and design decisions (1 min)
