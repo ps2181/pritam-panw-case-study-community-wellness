@@ -6,7 +6,7 @@
 
 ## Candidate Information
 
-**Candidate Name:** [Your Name]  
+**Candidate Name:** PRITAM SATPATHY 
 **Scenario Chosen:** Option 3 — Community Safety & Digital Wellness  
 **Estimated Time Spent:** ~5.5 hours  
 
@@ -159,6 +159,9 @@ The visual language is inspired by security operations centers (SOCs) but delibe
 ├── tests.js                # 43 tests across 8 test suites
 ├── .env.example            # API key template
 └── README.md               # This file
+|__ app.js
+|__ index.html
+|__ incidents.json
 ```
 
 ### Key Functions
