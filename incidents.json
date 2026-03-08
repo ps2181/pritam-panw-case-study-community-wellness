@@ -1,0 +1,166 @@
+{
+  "incidents": [
+    {
+      "id": "INC-001",
+      "timestamp": "2025-03-07T08:23:00Z",
+      "type": "digital",
+      "category": "phishing",
+      "title": "Netflix Billing Scam Email",
+      "raw_report": "got an email saying my netflix was suspended click here to update payment. looked fake",
+      "severity": "medium",
+      "location": { "neighborhood": "Downtown", "zip": "94102" },
+      "verified": true,
+      "ai_summary": null,
+      "tags": ["phishing", "email", "billing-scam"],
+      "action_checklist": ["Do not click links", "Report to Netflix directly", "Check email headers"]
+    },
+    {
+      "id": "INC-002",
+      "timestamp": "2025-03-07T09:45:00Z",
+      "type": "physical",
+      "category": "vehicle",
+      "title": "Catalytic Converter Theft",
+      "raw_report": "my neighbor had their catalytic converter stolen overnight on elm street. third one this week",
+      "severity": "medium",
+      "location": { "neighborhood": "Elm District", "zip": "94103" },
+      "verified": true,
+      "ai_summary": null,
+      "tags": ["theft", "vehicle", "catalytic-converter"],
+      "action_checklist": ["Park in well-lit areas", "Install anti-theft shield", "File police report"]
+    },
+    {
+      "id": "INC-003",
+      "timestamp": "2025-03-07T10:12:00Z",
+      "type": "digital",
+      "category": "data_breach",
+      "title": "Local Gym Data Breach",
+      "raw_report": "FitLife gym sent email saying member data was exposed including names emails and partial credit cards",
+      "severity": "high",
+      "location": { "neighborhood": "Midtown", "zip": "94104" },
+      "verified": true,
+      "ai_summary": null,
+      "tags": ["data-breach", "personal-info", "credit-card"],
+      "action_checklist": ["Monitor credit statements", "Change FitLife password", "Enable 2FA on email", "Consider credit freeze"]
+    },
+    {
+      "id": "INC-004",
+      "timestamp": "2025-03-07T11:30:00Z",
+      "type": "digital",
+      "category": "phishing",
+      "title": "IRS Tax Season Robocall",
+      "raw_report": "got a call saying irs will arrest me if i dont pay $500 in gift cards immediately. classic scam right?",
+      "severity": "low",
+      "location": { "neighborhood": "Westside", "zip": "94105" },
+      "verified": true,
+      "ai_summary": null,
+      "tags": ["robocall", "irs-scam", "gift-card"],
+      "action_checklist": ["IRS never calls demanding payment", "Hang up immediately", "Report to FTC at reportfraud.ftc.gov"]
+    },
+    {
+      "id": "INC-005",
+      "timestamp": "2025-03-07T13:15:00Z",
+      "type": "physical",
+      "category": "infrastructure",
+      "title": "Water Main Break — Oak Street",
+      "raw_report": "massive water main break on oak and 5th. road closed. traffic backed up for blocks",
+      "severity": "medium",
+      "location": { "neighborhood": "Oak District", "zip": "94106" },
+      "verified": true,
+      "ai_summary": null,
+      "tags": ["infrastructure", "road-closure", "water"],
+      "action_checklist": ["Avoid Oak St & 5th Ave", "Use alternate route via Main Blvd", "Report water waste to 311"]
+    },
+    {
+      "id": "INC-006",
+      "timestamp": "2025-03-07T14:00:00Z",
+      "type": "digital",
+      "category": "malware",
+      "title": "Fake Windows Security Alert Popup",
+      "raw_report": "my mom got a popup saying her computer was infected and to call microsoft support number. she almost called",
+      "severity": "high",
+      "location": { "neighborhood": "Northgate", "zip": "94107" },
+      "verified": true,
+      "ai_summary": null,
+      "tags": ["malware", "tech-support-scam", "popup"],
+      "action_checklist": ["Close browser immediately", "Do NOT call the number", "Run legitimate antivirus scan", "Microsoft never calls unsolicited"]
+    },
+    {
+      "id": "INC-007",
+      "timestamp": "2025-03-06T16:22:00Z",
+      "type": "physical",
+      "category": "package_theft",
+      "title": "Porch Piracy Surge",
+      "raw_report": "someone stole amazon packages from 3 houses on my street today caught on ring camera",
+      "severity": "medium",
+      "location": { "neighborhood": "Elm District", "zip": "94103" },
+      "verified": true,
+      "ai_summary": null,
+      "tags": ["theft", "package", "porch-piracy"],
+      "action_checklist": ["Require signature on deliveries", "Use Amazon locker", "Share Ring footage with neighbors", "File police report online"]
+    },
+    {
+      "id": "INC-008",
+      "timestamp": "2025-03-06T09:00:00Z",
+      "type": "digital",
+      "category": "wifi_security",
+      "title": "Rogue WiFi Hotspot at Coffee Shop",
+      "raw_report": "saw a wifi network called 'BrewHouse_Free' at brewhouse cafe but the real one is 'BrewHouse_Guest'. classic evil twin attack",
+      "severity": "high",
+      "location": { "neighborhood": "Arts Quarter", "zip": "94108" },
+      "verified": false,
+      "ai_summary": null,
+      "tags": ["wifi", "evil-twin", "network-security"],
+      "action_checklist": ["Always verify WiFi name with staff", "Use VPN on public WiFi", "Avoid banking on public networks"]
+    },
+    {
+      "id": "INC-009",
+      "timestamp": "2025-03-05T20:10:00Z",
+      "type": "physical",
+      "category": "scam",
+      "title": "Utility Impersonation Scam",
+      "raw_report": "man knocked on door saying he was from PG&E needed to check meter or power would be cut. asked for cash to clear debt. fake!",
+      "severity": "high",
+      "location": { "neighborhood": "Riverside", "zip": "94109" },
+      "verified": true,
+      "ai_summary": null,
+      "tags": ["impersonation", "utility-scam", "in-person"],
+      "action_checklist": ["Ask for official ID badge", "Call utility company directly to verify", "Do not let in without verification", "Call 911 if threatened"]
+    },
+    {
+      "id": "INC-010",
+      "timestamp": "2025-03-05T11:45:00Z",
+      "type": "digital",
+      "category": "romance_scam",
+      "title": "Romance Scam Targeting Seniors",
+      "raw_report": "my grandmother was almost scammed by someone on facebook claiming to be a military officer. asked for gift cards for flight home",
+      "severity": "high",
+      "location": { "neighborhood": "Sunnyvale Heights", "zip": "94110" },
+      "verified": true,
+      "ai_summary": null,
+      "tags": ["romance-scam", "seniors", "social-media", "gift-card"],
+      "action_checklist": ["Never send money to someone you haven't met", "Reverse image search their photos", "Report to FBI IC3 at ic3.gov", "Talk to trusted family member"]
+    }
+  ],
+  "noise_filtered": [
+    {
+      "id": "NOISE-001",
+      "raw": "ugh my neighbor parks in front of my house AGAIN so annoying i hate living here",
+      "reason": "Non-incident personal frustration"
+    },
+    {
+      "id": "NOISE-002",
+      "raw": "the city takes forever to fix potholes typical government incompetence!!!!!",
+      "reason": "Opinion/venting without actionable safety info"
+    },
+    {
+      "id": "NOISE-003",
+      "raw": "anyone know a good plumber? my sink is leaking",
+      "reason": "Service request, not a safety incident"
+    }
+  ],
+  "meta": {
+    "generated": "2025-03-07",
+    "synthetic": true,
+    "note": "All data is entirely fabricated for demonstration purposes. No real incidents or personal data."
+  }
+}

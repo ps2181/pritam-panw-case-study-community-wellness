@@ -1,0 +1,2506 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Community Guardian — Safety Intelligence Platform</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root {
+      --ink: #0a0c10;
+      --surface: #0f1117;
+      --panel: #161922;
+      --border: #1e2330;
+      --border-bright: #2a3145;
+      --text: #c8d0e0;
+      --muted: #5a6480;
+      --accent: #00e5ff;
+      --accent-dim: rgba(0, 229, 255, 0.08);
+      --accent-glow: rgba(0, 229, 255, 0.25);
+      --warn: #ff9f43;
+      --warn-dim: rgba(255, 159, 67, 0.08);
+      --danger: #ff4757;
+      --danger-dim: rgba(255, 71, 87, 0.08);
+      --safe: #2ed573;
+      --safe-dim: rgba(46, 213, 115, 0.08);
+      --purple: #a29bfe;
+      --font-display: 'Syne', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--ink);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── NOISE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--surface);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-bright);
+      border-radius: 2px;
+    }
+
+    /* ─── LAYOUT ─── */
+    .app-shell {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      grid-template-rows: auto 1fr;
+      min-height: 100vh;
+    }
+
+    /* ─── TOPBAR ─── */
+    .topbar {
+      grid-column: 1 / -1;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 24px;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 18px;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .topbar-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--safe-dim);
+      border: 1px solid rgba(46, 213, 115, 0.2);
+      border-radius: 100px;
+      padding: 4px 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--safe);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--safe);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.3;
+      }
+    }
+
+    .ai-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(0, 229, 255, 0.2);
+      border-radius: 100px;
+      padding: 4px 12px;
+      font-size: 11px;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .ai-badge:hover {
+      background: rgba(0, 229, 255, 0.12);
+    }
+
+    .ai-badge.offline {
+      color: var(--warn);
+      background: var(--warn-dim);
+      border-color: rgba(255, 159, 67, 0.2);
+    }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sidebar-section-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 12px 20px 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-left: 2px solid transparent;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .nav-item:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .nav-item.active {
+      color: var(--accent);
+      border-left-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .nav-icon {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--danger);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 100px;
+      padding: 1px 6px;
+      min-width: 18px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--ink);
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .user-zone {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+
+    /* ─── MAIN ─── */
+    .main {
+      background: var(--ink);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page {
+      display: none;
+      padding: 32px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .page-header {
+      margin-bottom: 28px;
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    .page-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    /* ─── STATS ROW ─── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .stat-card:hover {
+      border-color: var(--border-bright);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+    }
+
+    .stat-card.accent::before {
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .stat-card.warn::before {
+      background: linear-gradient(90deg, var(--warn), transparent);
+    }
+
+    .stat-card.danger::before {
+      background: linear-gradient(90deg, var(--danger), transparent);
+    }
+
+    .stat-card.safe::before {
+      background: linear-gradient(90deg, var(--safe), transparent);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: var(--font-mono);
+    }
+
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      margin: 8px 0 4px;
+    }
+
+    .stat-change {
+      font-size: 12px;
+    }
+
+    .stat-change.up {
+      color: var(--danger);
+    }
+
+    .stat-change.down {
+      color: var(--safe);
+    }
+
+    /* ─── INCIDENT FEED ─── */
+    .feed-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: var(--font-body);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box::placeholder {
+      color: var(--muted);
+    }
+
+    .search-box:focus {
+      border-color: var(--accent);
+    }
+
+    .filter-btn {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 16px;
+      color: var(--muted);
+      font-size: 12px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--border-bright);
+      color: var(--text);
+    }
+
+    .filter-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    /* ─── INCIDENT CARDS ─── */
+    .incident-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .incident-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .incident-card:hover {
+      border-color: var(--border-bright);
+      transform: translateX(2px);
+    }
+
+    .incident-card.expanded {
+      border-color: var(--accent);
+    }
+
+    .incident-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      border-radius: 3px 0 0 3px;
+    }
+
+    .incident-card.sev-high::before {
+      background: var(--danger);
+    }
+
+    .incident-card.sev-medium::before {
+      background: var(--warn);
+    }
+
+    .incident-card.sev-low::before {
+      background: var(--safe);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .card-type-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .card-meta {
+      flex: 1;
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .card-time {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+
+    .card-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .severity-badge {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .sev-high .severity-badge {
+      background: var(--danger-dim);
+      color: var(--danger);
+      border: 1px solid rgba(255, 71, 87, 0.2);
+    }
+
+    .sev-medium .severity-badge {
+      background: var(--warn-dim);
+      color: var(--warn);
+      border: 1px solid rgba(255, 159, 67, 0.2);
+    }
+
+    .sev-low .severity-badge {
+      background: var(--safe-dim);
+      color: var(--safe);
+      border: 1px solid rgba(46, 213, 115, 0.2);
+    }
+
+    .type-badge {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .verified-check {
+      color: var(--accent);
+      font-size: 11px;
+      font-family: var(--font-mono);
+    }
+
+    .card-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .tag {
+      font-size: 10px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-family: var(--font-mono);
+    }
+
+    .card-expand {
+      display: none;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .incident-card.expanded .card-expand {
+      display: block;
+    }
+
+    .ai-summary-block {
+      background: var(--accent-dim);
+      border: 1px solid rgba(0, 229, 255, 0.15);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .ai-block-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .ai-block-header.fallback {
+      color: var(--warn);
+    }
+
+    .ai-block-header.fallback+p {
+      color: var(--text);
+    }
+
+    .ai-loading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text);
+      padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 6px;
+    }
+
+    .checklist li::before {
+      content: '→';
+      color: var(--accent);
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+    }
+
+    /* ─── REPORT FORM ─── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    input,
+    textarea,
+    select {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: var(--font-body);
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--muted);
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--accent);
+    }
+
+    select option {
+      background: var(--panel);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--ink);
+      border: none;
+      border-radius: 8px;
+      padding: 11px 24px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-primary:hover {
+      background: #00f5ff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* ─── LOCATION SELECTOR ─── */
+    .location-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 8px;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .location-selector:hover {
+      background: var(--panel);
+      border-color: var(--border);
+    }
+
+    .location-dropdown-wrap {
+      position: relative;
+    }
+
+    .location-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 240px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-top: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: none;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .location-dropdown.open {
+      display: block;
+      animation: slideIn 0.2s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .location-option {
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .location-option:hover {
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+
+    .location-option.current {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border-left: 2px solid var(--accent);
+    }
+
+    .location-option-icon {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .geo-btn {
+      width: 100%;
+      padding: 10px;
+      background: var(--accent-dim);
+      border: none;
+      border-top: 1px solid var(--border);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .geo-btn:hover {
+      background: rgba(0, 229, 255, 0.15);
+    }
+
+    .radius-slider-wrap {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .radius-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 24px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--border-bright);
+      color: var(--text);
+    }
+
+    .validation-msg {
+      font-size: 11px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .validation-msg.error {
+      background: var(--danger-dim);
+      color: var(--danger);
+      border: 1px solid rgba(255, 71, 87, 0.2);
+      display: block;
+    }
+
+    .validation-msg.success {
+      background: var(--safe-dim);
+      color: var(--safe);
+      border: 1px solid rgba(46, 213, 115, 0.2);
+      display: block;
+    }
+
+    /* ─── AI DIGEST ─── */
+    .digest-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .digest-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .digest-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .digest-meta {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+
+    .digest-body {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .threat-level-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .threat-level-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--safe), var(--warn));
+      transition: width 1s ease;
+    }
+
+    /* ─── SAFE CIRCLES ─── */
+    .circles-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .circle-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.2s;
+    }
+
+    .circle-card:hover {
+      border-color: var(--border-bright);
+    }
+
+    .circle-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .circle-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .circle-name {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .circle-count {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+
+    .circle-members {
+      display: flex;
+      gap: -6px;
+      margin-bottom: 14px;
+    }
+
+    .member-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--panel);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-right: -8px;
+    }
+
+    .status-update-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px dashed var(--border-bright);
+      border-radius: 8px;
+      padding: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-body);
+    }
+
+    .status-update-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .last-status {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      margin-top: 8px;
+    }
+
+    /* ─── NOISE FILTER VIS ─── */
+    .noise-vis {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .noise-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .noise-item:last-child {
+      border-bottom: none;
+    }
+
+    .noise-verdict {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      padding: 3px 8px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .noise-verdict.filtered {
+      background: rgba(255, 71, 87, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(255, 71, 87, 0.2);
+    }
+
+    .noise-verdict.signal {
+      background: var(--safe-dim);
+      color: var(--safe);
+      border: 1px solid rgba(46, 213, 115, 0.2);
+    }
+
+    .noise-text {
+      font-size: 12px;
+      color: var(--muted);
+      flex: 1;
+      font-style: italic;
+    }
+
+    .noise-reason {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    /* ─── MODAL ─── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border-bright);
+      border-radius: 16px;
+      padding: 28px;
+      width: 90%;
+      max-width: 520px;
+      animation: modalIn 0.25s ease;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(0.96) translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .modal-close {
+      width: 28px;
+      height: 28px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 14px;
+      transition: all 0.15s;
+    }
+
+    .modal-close:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    /* ─── TOAST ─── */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast {
+      background: var(--panel);
+      border: 1px solid var(--border-bright);
+      border-radius: 10px;
+      padding: 12px 16px;
+      min-width: 280px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toastIn 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .toast.success {
+      border-color: rgba(46, 213, 115, 0.3);
+    }
+
+    .toast.error {
+      border-color: rgba(255, 71, 87, 0.3);
+    }
+
+    .toast.info {
+      border-color: rgba(0, 229, 255, 0.3);
+    }
+
+    /* ─── THREAT MAP PLACEHOLDER ─── */
+    .threat-map {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .threat-map-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 60%, rgba(0, 229, 255, 0.04) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 40%, rgba(162, 155, 254, 0.04) 0%, transparent 60%);
+    }
+
+    .map-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .map-dot {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .map-dot::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: ripple 2s infinite;
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(1);
+        opacity: 0.4;
+      }
+
+      100% {
+        transform: scale(2.5);
+        opacity: 0;
+      }
+    }
+
+    .map-dot.danger {
+      background: var(--danger);
+    }
+
+    .map-dot.danger::after {
+      background: var(--danger);
+    }
+
+    .map-dot.warn {
+      background: var(--warn);
+    }
+
+    .map-dot.warn::after {
+      background: var(--warn);
+    }
+
+    .map-dot.safe {
+      background: var(--safe);
+    }
+
+    .map-dot.safe::after {
+      background: var(--safe);
+    }
+
+    .map-label {
+      position: absolute;
+      font-size: 9px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      white-space: nowrap;
+    }
+
+    .map-overlay-text {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      z-index: 1;
+    }
+
+    /* ─── SECTION HEADER ─── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .section-action {
+      font-size: 12px;
+      color: var(--accent);
+      cursor: pointer;
+      font-family: var(--font-mono);
+      background: none;
+      border: none;
+      transition: opacity 0.2s;
+    }
+
+    .section-action:hover {
+      opacity: 0.7;
+    }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+    }
+
+    /* ─── ALERT BANNER ─── */
+    .alert-banner {
+      background: linear-gradient(135deg, rgba(255, 159, 67, 0.1), rgba(255, 71, 87, 0.05));
+      border: 1px solid rgba(255, 159, 67, 0.2);
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .alert-banner .icon {
+      font-size: 20px;
+    }
+
+    .alert-banner .text {
+      flex: 1;
+    }
+
+    .alert-banner .title {
+      font-weight: 600;
+      color: var(--warn);
+      font-size: 13px;
+    }
+
+    .alert-banner .body {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ─── TWO COLUMN ─── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    /* ─── EMPTY STATE ─── */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--muted);
+    }
+
+    .empty-state .icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    .empty-state .title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .empty-state .body {
+      font-size: 13px;
+    }
+
+    /* ─── RANGE / TOGGLE ─── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .toggle-label {
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .toggle-desc {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .toggle {
+      width: 36px;
+      height: 20px;
+      background: var(--border);
+      border-radius: 100px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: none;
+      flex-shrink: 0;
+    }
+
+    .toggle.on {
+      background: var(--accent);
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.2s;
+    }
+
+    .toggle.on::after {
+      transform: translateX(16px);
+    }
+
+    /* ─── LIVE CLOCK & COUNTDOWN ─── */
+    .live-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .live-clock {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(0, 229, 255, 0.15);
+      border-radius: 6px;
+      padding: 4px 10px;
+    }
+
+    .countdown {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .countdown .timer {
+      color: var(--warn);
+      font-weight: 700;
+    }
+
+    /* ─── NEW INCIDENT GLOW ─── */
+    @keyframes newGlow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(0, 229, 255, 0);
+      }
+
+      50% {
+        box-shadow: 0 0 20px 4px rgba(0, 229, 255, 0.25);
+      }
+    }
+
+    .incident-card.new-incident {
+      animation: newGlow 2s ease 3;
+      border-color: var(--accent);
+    }
+
+    .new-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--ink);
+      font-size: 9px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-left: 8px;
+      letter-spacing: 0.5px;
+      animation: pulse-dot 1.5s infinite;
+    }
+
+    /* ─── SPARKLINE ─── */
+    .sparkline {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 24px;
+      margin-top: 6px;
+    }
+
+    .sparkline .bar {
+      width: 6px;
+      border-radius: 2px 2px 0 0;
+      background: var(--accent);
+      opacity: 0.5;
+      transition: height 0.6s ease;
+    }
+
+    .sparkline .bar:last-child {
+      opacity: 1;
+    }
+
+    /* ─── LEAFLET MAP OVERRIDES ─── */
+    #leafletMap {
+      height: 100%;
+      width: 100%;
+      border-radius: 12px;
+      z-index: 1;
+    }
+
+    .leaflet-container {
+      background: var(--panel) !important;
+    }
+
+    .leaflet-popup-content-wrapper {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border-bright);
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .leaflet-popup-tip {
+      background: var(--panel);
+    }
+
+    .leaflet-popup-content {
+      font-family: var(--font-body);
+      font-size: 12px;
+      margin: 10px 14px;
+    }
+
+    .leaflet-popup-content .popup-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      color: #fff;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .leaflet-popup-content .popup-meta {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+    }
+
+    .leaflet-control-zoom a {
+      background: var(--panel) !important;
+      color: var(--text) !important;
+      border-color: var(--border) !important;
+    }
+
+    .leaflet-control-attribution {
+      background: rgba(10, 12, 16, 0.8) !important;
+      color: var(--muted) !important;
+      font-size: 9px !important;
+    }
+
+    .leaflet-control-attribution a {
+      color: var(--accent) !important;
+    }
+
+    /* ─── PULSE MARKER ─── */
+    .pulse-marker {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .pulse-marker::after {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: ripple 2s infinite;
+    }
+
+    .pulse-marker.high {
+      background: var(--danger);
+    }
+
+    .pulse-marker.high::after {
+      background: var(--danger);
+    }
+
+    .pulse-marker.medium {
+      background: var(--warn);
+    }
+
+    .pulse-marker.medium::after {
+      background: var(--warn);
+    }
+
+    .pulse-marker.low {
+      background: var(--safe);
+    }
+
+    .pulse-marker.low::after {
+      background: var(--safe);
+    }
+
+    /* ─── API KEY INPUT ─── */
+    .api-key-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .api-key-group input {
+      flex: 1;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .api-key-group .btn-primary {
+      padding: 8px 16px;
+      font-size: 11px;
+    }
+
+    /* ─── FEED SOURCE BADGE ─── */
+    .source-badge {
+      font-size: 9px;
+      font-family: var(--font-mono);
+      color: var(--purple);
+      background: rgba(162, 155, 254, 0.1);
+      border: 1px solid rgba(162, 155, 254, 0.2);
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+
+    /* ─── SENIOR MODE ─── */
+    body.senior-mode {
+      --font-body: 'Inter', system-ui, sans-serif;
+      font-size: 20px;
+      --surface: #000000;
+      --panel: #0a0c10;
+      --border: #3c4043;
+      --text: #ffffff;
+      --muted: #bdc1c6;
+    }
+
+    body.senior-mode .page-title {
+      font-size: 42px;
+      color: #fff;
+    }
+
+    body.senior-mode .card-title {
+      font-size: 28px;
+    }
+
+    body.senior-mode .card-time,
+    body.senior-mode .stat-label,
+    body.senior-mode label {
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    body.senior-mode .incident-card {
+      padding: 32px;
+      gap: 24px;
+      border-width: 2px;
+    }
+
+    body.senior-mode .btn-primary,
+    body.senior-mode .btn-secondary {
+      padding: 24px 32px;
+      font-size: 20px;
+      font-weight: 800;
+      border-radius: 12px;
+    }
+
+    body.senior-mode .nav-item {
+      padding: 20px 24px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    body.senior-mode .sidebar-section-label {
+      font-size: 16px;
+      margin-top: 40px;
+      color: var(--accent);
+    }
+
+    body.senior-mode .status-pill {
+      padding: 12px 24px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    body.senior-mode .ai-badge {
+      padding: 12px 24px;
+      font-size: 18px;
+    }
+
+    /* Hide non-critical dashboard elements in Senior Mode */
+    body.senior-mode .stats-row,
+    body.senior-mode .alert-banner-container,
+    body.senior-mode .feed-controls {
+      display: none !important;
+    }
+
+    /* ─── TRUST BADGES ─── */
+    .trust-badge {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-top: 4px;
+      text-align: center;
+      width: fit-content;
+    }
+
+    .trust-official {
+      background: rgba(162, 155, 254, 0.15);
+      color: var(--purple);
+      border: 1px solid rgba(162, 155, 254, 0.3);
+    }
+
+    .trust-high {
+      background: var(--safe-dim);
+      color: var(--safe);
+      border: 1px solid rgba(46, 213, 115, 0.3);
+    }
+
+    .trust-medium {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+    }
+
+    .trust-low {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    /* ─── NEARBY BADGE ─── */
+    .nearby-badge {
+      display: inline-block;
+      background: var(--danger-dim);
+      color: var(--danger);
+      font-size: 10px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 71, 87, 0.3);
+      margin-left: 8px;
+      animation: pulse-nearby 2s infinite;
+    }
+
+    @keyframes pulse-nearby {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4);
+      }
+
+      70% {
+        box-shadow: 0 0 0 6px rgba(255, 71, 87, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+      }
+    }
+
+    /* ─── VERIFIED BY NEIGHBORS ─── */
+    .neighbors-verified {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--accent);
+      font-family: var(--font-mono);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .two-col,
+      .form-grid,
+      .circles-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app-shell">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="logo">
+        <div class="logo-icon">🛡</div>
+        Community <span>Guardian</span>
+      </div>
+
+      <div style="width:1px;height:24px;background:var(--border);margin:0 8px;"></div>
+
+      <div class="location-dropdown-wrap">
+        <div class="location-selector" onclick="toggleLocationDropdown(event)">
+          <span class="location-icon">📍</span>
+          <span id="currentLocationDisplay">San Francisco, CA</span>
+          <span style="font-size:10px;opacity:0.5;">▼</span>
+        </div>
+        <div class="location-dropdown" id="locationDropdown">
+          <div id="locationOptionsContainer">
+            <!-- Cities will be injected by JS -->
+          </div>
+          <div class="radius-slider-wrap">
+            <div class="radius-label">
+              <span>Monitoring Radius</span>
+              <span id="radiusValueDisplay">50 mi</span>
+            </div>
+            <input type="range" id="radiusSlider" min="10" max="200" value="50" oninput="updateRadius(this.value)" />
+          </div>
+          <button class="geo-btn" onclick="detectLocation()">🛰 Use My Location</button>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="status-pill">
+          <div class="status-dot"></div>
+          LIVE MONITORING
+        </div>
+        <div class="ai-badge" id="aiBadge" onclick="toggleAIMode()">
+          ⚡ AI: ONLINE
+        </div>
+      </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sidebar-section-label">Monitor</div>
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showPage('feed')">
+        <span class="nav-icon">📡</span> Incident Feed
+        <span class="nav-badge" id="incidentBadge">10</span>
+      </div>
+      <div class="nav-item" onclick="showPage('digest')">
+        <span class="nav-icon">🤖</span> AI Safety Digest
+      </div>
+
+      <div class="sidebar-section-label">Community</div>
+      <div class="nav-item" onclick="showPage('circles')">
+        <span class="nav-icon">🔐</span> Safe Circles
+      </div>
+      <div class="nav-item" onclick="showPage('report')">
+        <span class="nav-icon">📝</span> Report Incident
+      </div>
+
+      <div class="sidebar-section-label">Platform</div>
+      <div class="nav-item" onclick="showPage('noise')">
+        <span class="nav-icon">🔇</span> Noise Filter
+      </div>
+      <div class="nav-item" onclick="showPage('settings')">
+        <span class="nav-icon">⚙️</span> Settings
+      </div>
+
+      <div class="divider" style="margin: 12px 20px; opacity: 0.3;"></div>
+      <div style="padding: 0 20px;">
+        <div class="toggle-row" style="border:none; padding: 4px 0;">
+          <div class="toggle-label" style="font-size: 11px; color: var(--muted);">SENIOR MODE</div>
+          <button class="toggle" id="sidebarSeniorToggle" onclick="toggleSeniorMode()"></button>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="avatar">JD</div>
+          <div class="user-info">
+            <div class="user-name">Jordan D.</div>
+            <div class="user-zone">Zone: Downtown</div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+      <!-- ═══ DASHBOARD ═══ -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div class="page-title">Safety Overview</div>
+          <div class="page-subtitle live-header">
+            <span id="lastUpdated">Loading...</span>
+            <span class="live-clock" id="liveClock">--:--:--</span>
+            <span class="countdown">Next refresh: <span class="timer" id="refreshCountdown">3:00</span></span>
+          </div>
+        </div>
+
+        <div class="alert-banner">
+          <div class="icon">⚠️</div>
+          <div class="text">
+            <div class="title">Active Alert: Phishing Surge in Downtown</div>
+            <div class="body">3 confirmed phishing attempts reported in the last 24 hours. See AI Digest for recommended
+              actions.</div>
+          </div>
+          <button class="btn-secondary" style="padding:7px 14px;font-size:12px;" onclick="showPage('digest')">View
+            Digest →</button>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-card accent">
+            <div class="stat-label">Total Incidents (7d)</div>
+            <div class="stat-value" id="statTotal">0</div>
+            <div class="stat-change" id="statTotalChange">Loading...</div>
+            <div class="sparkline" id="sparkTotal"></div>
+          </div>
+          <div class="stat-card danger">
+            <div class="stat-label">High Severity</div>
+            <div class="stat-value" id="statHigh">0</div>
+            <div class="stat-change" id="statHighChange">Loading...</div>
+            <div class="sparkline" id="sparkHigh"></div>
+          </div>
+          <div class="stat-card warn">
+            <div class="stat-label">Noise Filtered</div>
+            <div class="stat-value" id="statNoise">0</div>
+            <div class="stat-change" id="statNoiseChange">Loading...</div>
+          </div>
+          <div class="stat-card safe">
+            <div class="stat-label">Verified Reports</div>
+            <div class="stat-value" id="statVerified">0</div>
+            <div class="stat-change" id="statVerifiedChange">Loading...</div>
+          </div>
+          <div class="stat-card danger">
+            <div class="stat-label">Cyber Watch</div>
+            <div class="stat-value" id="statCyber">0</div>
+            <div class="stat-change" id="statCyberChange">Loading...</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div>
+            <div class="section-header">
+              <div class="section-title">Threat Heatmap</div>
+              <button class="section-action">Full view →</button>
+            </div>
+
+            <div class="threat-map" style="height:280px;">
+              <div id="leafletMap"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-header">
+              <div class="section-title">Threat Breakdown</div>
+            </div>
+            <div class="digest-card" style="margin-bottom:0;padding:16px;">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                    <span>Digital / Cyber</span><span
+                      style="color:var(--accent);font-family:var(--font-mono);">60%</span>
+                  </div>
+                  <div class="threat-level-bar">
+                    <div class="threat-level-fill"
+                      style="width:60%;background:linear-gradient(90deg,var(--accent),var(--purple))"></div>
+                  </div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                    <span>Physical / In-Person</span><span
+                      style="color:var(--warn);font-family:var(--font-mono);">40%</span>
+                  </div>
+                  <div class="threat-level-bar">
+                    <div class="threat-level-fill"
+                      style="width:40%;background:linear-gradient(90deg,var(--warn),var(--danger))"></div>
+                  </div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                    <span>Phishing / Scams</span><span
+                      style="color:var(--danger);font-family:var(--font-mono);">35%</span>
+                  </div>
+                  <div class="threat-level-bar">
+                    <div class="threat-level-fill"
+                      style="width:35%;background:linear-gradient(90deg,var(--danger),transparent)"></div>
+                  </div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                    <span>Property / Theft</span><span
+                      style="color:var(--warn);font-family:var(--font-mono);">25%</span>
+                  </div>
+                  <div class="threat-level-bar">
+                    <div class="threat-level-fill"
+                      style="width:25%;background:linear-gradient(90deg,var(--warn),transparent)"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section-header">
+          <div class="section-title">Recent High-Priority Incidents</div>
+          <button class="section-action" onclick="showPage('feed')">View all →</button>
+        </div>
+
+        <div class="incident-grid" id="dashboardFeed"></div>
+      </div>
+
+      <!-- ═══ INCIDENT FEED ═══ -->
+      <div class="page" id="page-feed">
+        <div class="page-header">
+          <div class="page-title">Live Incident Feed</div>
+          <div class="page-subtitle">Community-reported incidents · AI-filtered and verified</div>
+        </div>
+
+        <div class="feed-controls">
+          <input class="search-box" type="text" id="searchInput" placeholder="🔍  Search incidents, tags, locations..."
+            oninput="filterFeed()" />
+          <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+          <button class="filter-btn" onclick="setFilter('digital', this)">💻 Digital</button>
+          <button class="filter-btn" onclick="setFilter('physical', this)">🏘 Physical</button>
+          <button class="filter-btn" onclick="setFilter('high', this)">🔴 High</button>
+        </div>
+
+        <div class="incident-grid" id="incidentFeed"></div>
+      </div>
+
+      <!-- ═══ AI DIGEST ═══ -->
+      <div class="page" id="page-digest">
+        <div class="page-header">
+          <div class="page-title">AI Safety Digest</div>
+          <div class="page-subtitle">Calm, actionable summaries · Generated by AI · Reviewed for accuracy</div>
+        </div>
+
+        <div id="digestContent">
+          <div class="digest-card">
+            <div class="digest-header">
+              <div>
+                <div class="digest-title">📋 Today's Threat Summary</div>
+                <div class="digest-meta" id="digestMeta">Generating...</div>
+              </div>
+              <div class="ai-badge" id="digestAiBadge">⚡ AI GENERATED</div>
+            </div>
+            <div class="digest-body" id="digestBody">
+              <div class="ai-loading">
+                <div class="spinner"></div> Analyzing community reports...
+              </div>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="digest-card">
+              <div class="digest-title" style="margin-bottom:14px;">🛡 Top Recommended Actions</div>
+              <ul class="checklist" id="digestChecklist"></ul>
+            </div>
+            <div class="digest-card">
+              <div class="digest-title" style="margin-bottom:14px;">📊 Incident Trends</div>
+              <div id="digestTrends" style="font-size:13px;color:var(--text);line-height:1.7;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ REPORT ═══ -->
+      <div class="page" id="page-report">
+        <div class="page-header">
+          <div class="page-title">Report an Incident</div>
+          <div class="page-subtitle">Help protect your community · All reports reviewed by AI before publishing</div>
+        </div>
+
+        <div class="digest-card">
+          <div class="ai-summary-block" style="margin-bottom:0;padding:12px 14px;margin-bottom:20px;">
+            <div class="ai-block-header">ℹ️ AI-ASSISTED REPORTING</div>
+            <p style="font-size:12px;color:var(--text);">As you fill in your report, our AI will automatically
+              categorize and tag it. You can override any suggestion. Your personal location data is never stored.</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Incident Title *</label>
+              <input type="text" id="reportTitle" placeholder="Brief, descriptive title" oninput="validateReport()" />
+              <div class="validation-msg" id="titleError">Title must be at least 5 characters</div>
+            </div>
+
+            <div class="form-group">
+              <label>Incident Type *</label>
+              <select id="reportType" onchange="validateReport()">
+                <option value="">Select type...</option>
+                <option value="digital">💻 Digital / Cyber</option>
+                <option value="physical">🏘 Physical / In-Person</option>
+                <option value="infrastructure">🚧 Infrastructure</option>
+                <option value="other">❓ Other</option>
+              </select>
+              <div class="validation-msg" id="typeError">Please select an incident type</div>
+            </div>
+
+            <div class="form-group">
+              <label>Neighborhood</label>
+              <input type="text" id="reportNeighborhood" placeholder="e.g., Downtown, Westside..." />
+            </div>
+
+            <div class="form-group">
+              <label>Date & Time</label>
+              <input type="datetime-local" id="reportTime" />
+            </div>
+
+            <div class="form-group full">
+              <label>Description *</label>
+              <textarea id="reportDesc"
+                placeholder="Describe what happened in plain language. The AI will help categorize and summarize this."
+                oninput="validateReport(); aiCategorize()"></textarea>
+              <div class="validation-msg" id="descError">Description must be at least 20 characters</div>
+              <div class="validation-msg" id="noiseError"
+                style="color:var(--warn);background:var(--warn-dim);border-color:rgba(255,159,67,0.2);">🤖 AI: This
+                report looks like general venting or off-topic "noise". Please provide more actionable safety details.
+              </div>
+            </div>
+
+            <div class="form-group full" id="aiSuggestionBlock" style="display:none;">
+              <div class="ai-summary-block" style="margin-bottom:0;">
+                <div class="ai-block-header">⚡ AI SUGGESTION</div>
+                <div id="aiSuggestionContent" style="font-size:12px;color:var(--text);"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn-primary" onclick="submitReport()">🛡 Submit Report</button>
+            <button class="btn-secondary" onclick="clearReport()">Clear</button>
+          </div>
+
+          <div class="validation-msg" id="formSuccess" style="margin-top:16px;"></div>
+        </div>
+      </div>
+
+      <!-- ═══ SAFE CIRCLES ═══ -->
+      <div class="page" id="page-circles">
+        <div class="page-header">
+          <div class="page-title">Safe Circles</div>
+          <div class="page-subtitle">Private, encrypted check-ins with trusted guardians</div>
+        </div>
+
+        <div class="alert-banner" style="background:var(--accent-dim);border-color:rgba(0,229,255,0.2);">
+          <div class="icon">🔐</div>
+          <div class="text">
+            <div class="title" style="color:var(--accent);">End-to-End Encrypted</div>
+            <div class="body">Status updates in Safe Circles are encrypted and only visible to members. Location data is
+              never stored on servers.</div>
+          </div>
+        </div>
+
+        <div class="circles-grid" id="circlesGrid"></div>
+
+        <div style="margin-top:20px;">
+          <button class="btn-secondary" onclick="openCreateCircle()">+ Create New Safe Circle</button>
+        </div>
+      </div>
+
+      <!-- ═══ NOISE FILTER ═══ -->
+      <div class="page" id="page-noise">
+        <div class="page-header">
+          <div class="page-title">Noise-to-Signal Filter</div>
+          <div class="page-subtitle">AI analysis of raw community reports · See what gets filtered and why</div>
+        </div>
+
+        <div class="stats-row" style="grid-template-columns:repeat(3,1fr);">
+          <div class="stat-card safe">
+            <div class="stat-label">Signal Kept</div>
+            <div class="stat-value">10</div>
+            <div class="stat-change">Actionable incidents</div>
+          </div>
+          <div class="stat-card danger">
+            <div class="stat-label">Noise Removed</div>
+            <div class="stat-value">3</div>
+            <div class="stat-change">Venting / off-topic</div>
+          </div>
+          <div class="stat-card accent">
+            <div class="stat-label">Filter Accuracy</div>
+            <div class="stat-value">94%</div>
+            <div class="stat-change">Based on user feedback</div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <div class="section-title">Filtered Submissions (Noise)</div>
+        </div>
+
+        <div class="noise-vis" id="noiseList"></div>
+
+        <div class="section-header" style="margin-top:24px;">
+          <div class="section-title">AI Filtering Criteria</div>
+        </div>
+
+        <div class="digest-card">
+          <div class="digest-body">
+            <p style="margin-bottom:10px;">The AI classifies a submission as <strong
+                style="color:var(--danger);">noise</strong> if it matches any of these patterns:</p>
+            <ul class="checklist">
+              <li>Personal frustration or venting without a specific safety incident</li>
+              <li>Requests for services (plumbers, recommendations, etc.)</li>
+              <li>Duplicate reports of the same verified incident</li>
+              <li>Unverifiable rumors without corroborating detail</li>
+              <li>General opinion or political commentary</li>
+            </ul>
+            <p style="margin-top:12px;color:var(--muted);font-size:12px;">⚠️ <strong>Fallback:</strong> If the AI is
+              unavailable, a rule-based keyword classifier is used. Moderators review all borderline cases.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-settings">
+        <div class="page-header">
+          <div class="page-title">Settings</div>
+          <div class="page-subtitle">Customize your Guardian experience</div>
+        </div>
+
+        <div class="digest-card">
+          <div class="digest-title" style="margin-bottom:16px;">📍 Location Settings</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">Set your primary monitoring zone. This
+            affects real-time alerts for weather, disasters, and localized safety incidents.</p>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+            <div class="form-group">
+              <label>Monitoring Zone</label>
+              <select id="settingsLocationSelect" onchange="selectLocationByName(this.value)">
+                <!-- Cities will be injected by JS -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Radius</label>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <input type="range" min="10" max="200" value="50" style="flex:1;" oninput="updateRadius(this.value)"
+                  id="settingsRadiusSlider" />
+                <span id="settingsRadiusDisplay" style="font-family:var(--font-mono);font-size:12px;width:50px;">50
+                  mi</span>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-secondary" style="width:100%;" onclick="detectLocation()">🛰 Refresh Current
+            Geolocation</button>
+        </div>
+
+        <div class="digest-card">
+          <div class="digest-title" style="margin-bottom:16px;">🔔 Notifications</div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">High-severity alerts</div>
+              <div class="toggle-desc">Immediate notification for critical incidents</div>
+            </div>
+            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Daily AI digest</div>
+              <div class="toggle-desc">Morning summary of local safety conditions</div>
+            </div>
+            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Safe circle check-ins</div>
+              <div class="toggle-desc">Reminders from your guardians</div>
+            </div>
+            <button class="toggle" onclick="this.classList.toggle('on')"></button>
+          </div>
+        </div>
+
+        <div class="digest-card">
+          <div class="digest-title" style="margin-bottom:16px;">🤖 AI Preferences</div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">AI-generated summaries</div>
+              <div class="toggle-desc">Use Claude API for incident summaries</div>
+            </div>
+            <button class="toggle on" id="aiToggle" onclick="toggleAIFromSettings(this)"></button>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Auto-categorization</div>
+              <div class="toggle-desc">AI suggests tags and severity on new reports</div>
+            </div>
+            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Fallback mode</div>
+              <div class="toggle-desc">Use rule-based classifier when AI is unavailable</div>
+            </div>
+            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div
+            style="margin-top:16px;padding:16px;background:var(--accent-dim);border:1px solid rgba(0,229,255,0.15);border-radius:8px;">
+            <div
+              style="font-size:11px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">
+              🔑 GEMINI API KEY</div>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:8px;">Enter your Google Gemini API key to enable
+              AI features. Get one free at <a href="https://aistudio.google.com/apikey" target="_blank"
+                style="color:var(--accent);">aistudio.google.com</a></p>
+            <div class="api-key-group">
+              <input type="password" id="geminiKeyInput" placeholder="AIza..." />
+              <button class="btn-primary" onclick="saveApiKey()">Save Key</button>
+            </div>
+            <div id="apiKeyStatus" style="font-size:11px;color:var(--muted);margin-top:6px;"></div>
+          </div>
+        </div>
+
+        <div class="digest-card">
+          <div class="digest-title" style="margin-bottom:16px;">🔐 Privacy</div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Anonymous reporting</div>
+              <div class="toggle-desc">Submit incidents without linking to your profile</div>
+            </div>
+            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Location sharing</div>
+              <div class="toggle-desc">Share approximate neighborhood only</div>
+            </div>
+            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          </div>
+        </div>
+
+        <div class="digest-card">
+          <div class="digest-title" style="margin-bottom:16px;">👵 Accessibility & Senior Mode</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">Enable larger fonts, higher contrast, and
+            simplified layouts for a more accessible experience.</p>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Senior Mode</div>
+              <div class="toggle-desc">Larger text and clearer buttons</div>
+            </div>
+            <button class="toggle" id="settingsSeniorToggle" onclick="toggleSeniorMode()"></button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="circleModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">🔐 Create Safe Circle</div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Circle Name</label>
+          <input type="text" id="circleName" placeholder="e.g., Family, Neighbors, Coworkers..." />
+        </div>
+        <div class="form-group full">
+          <label>Invite Members (emails)</label>
+          <input type="text" id="circleMembers" placeholder="jane@email.com, bob@email.com..." />
+        </div>
+        <div class="form-group full">
+          <label>Circle Icon</label>
+          <div style="display:flex;gap:10px;margin-top:4px;">
+            <span style="cursor:pointer;font-size:24px;" onclick="selectEmoji(this)">👨‍👩‍👧</span>
+            <span style="cursor:pointer;font-size:24px;" onclick="selectEmoji(this)">🏘</span>
+            <span style="cursor:pointer;font-size:24px;" onclick="selectEmoji(this)">💼</span>
+            <span style="cursor:pointer;font-size:24px;" onclick="selectEmoji(this)">🏫</span>
+            <span style="cursor:pointer;font-size:24px;" onclick="selectEmoji(this)">🤝</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" onclick="createCircle()">Create Circle</button>
+        <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
