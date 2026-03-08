@@ -8,11 +8,22 @@
       "title": "Netflix Billing Scam Email",
       "raw_report": "got an email saying my netflix was suspended click here to update payment. looked fake",
       "severity": "medium",
-      "location": { "neighborhood": "Downtown", "zip": "94102" },
+      "location": {
+        "neighborhood": "Downtown",
+        "zip": "94102"
+      },
       "verified": true,
       "ai_summary": null,
-      "tags": ["phishing", "email", "billing-scam"],
-      "action_checklist": ["Do not click links", "Report to Netflix directly", "Check email headers"]
+      "tags": [
+        "phishing",
+        "email",
+        "billing-scam"
+      ],
+      "action_checklist": [
+        "Do not click links",
+        "Report to Netflix directly",
+        "Check email headers"
+      ]
     },
     {
       "id": "INC-002",
@@ -22,11 +33,22 @@
       "title": "Catalytic Converter Theft",
       "raw_report": "my neighbor had their catalytic converter stolen overnight on elm street. third one this week",
       "severity": "medium",
-      "location": { "neighborhood": "Elm District", "zip": "94103" },
+      "location": {
+        "neighborhood": "Elm District",
+        "zip": "94103"
+      },
       "verified": true,
       "ai_summary": null,
-      "tags": ["theft", "vehicle", "catalytic-converter"],
-      "action_checklist": ["Park in well-lit areas", "Install anti-theft shield", "File police report"]
+      "tags": [
+        "theft",
+        "vehicle",
+        "catalytic-converter"
+      ],
+      "action_checklist": [
+        "Park in well-lit areas",
+        "Install anti-theft shield",
+        "File police report"
+      ]
     },
     {
       "id": "INC-003",
@@ -36,11 +58,23 @@
       "title": "Local Gym Data Breach",
       "raw_report": "FitLife gym sent email saying member data was exposed including names emails and partial credit cards",
       "severity": "high",
-      "location": { "neighborhood": "Midtown", "zip": "94104" },
+      "location": {
+        "neighborhood": "Midtown",
+        "zip": "94104"
+      },
       "verified": true,
       "ai_summary": null,
-      "tags": ["data-breach", "personal-info", "credit-card"],
-      "action_checklist": ["Monitor credit statements", "Change FitLife password", "Enable 2FA on email", "Consider credit freeze"]
+      "tags": [
+        "data-breach",
+        "personal-info",
+        "credit-card"
+      ],
+      "action_checklist": [
+        "Monitor credit statements",
+        "Change FitLife password",
+        "Enable 2FA on email",
+        "Consider credit freeze"
+      ]
     },
     {
       "id": "INC-004",
@@ -50,11 +84,22 @@
       "title": "IRS Tax Season Robocall",
       "raw_report": "got a call saying irs will arrest me if i dont pay $500 in gift cards immediately. classic scam right?",
       "severity": "low",
-      "location": { "neighborhood": "Westside", "zip": "94105" },
+      "location": {
+        "neighborhood": "Westside",
+        "zip": "94105"
+      },
       "verified": true,
       "ai_summary": null,
-      "tags": ["robocall", "irs-scam", "gift-card"],
-      "action_checklist": ["IRS never calls demanding payment", "Hang up immediately", "Report to FTC at reportfraud.ftc.gov"]
+      "tags": [
+        "robocall",
+        "irs-scam",
+        "gift-card"
+      ],
+      "action_checklist": [
+        "IRS never calls demanding payment",
+        "Hang up immediately",
+        "Report to FTC at reportfraud.ftc.gov"
+      ]
     },
     {
       "id": "INC-005",
@@ -64,11 +109,22 @@
       "title": "Water Main Break — Oak Street",
       "raw_report": "massive water main break on oak and 5th. road closed. traffic backed up for blocks",
       "severity": "medium",
-      "location": { "neighborhood": "Oak District", "zip": "94106" },
+      "location": {
+        "neighborhood": "Oak District",
+        "zip": "94106"
+      },
       "verified": true,
       "ai_summary": null,
-      "tags": ["infrastructure", "road-closure", "water"],
-      "action_checklist": ["Avoid Oak St & 5th Ave", "Use alternate route via Main Blvd", "Report water waste to 311"]
+      "tags": [
+        "infrastructure",
+        "road-closure",
+        "water"
+      ],
+      "action_checklist": [
+        "Avoid Oak St & 5th Ave",
+        "Use alternate route via Main Blvd",
+        "Report water waste to 311"
+      ]
     },
     {
       "id": "INC-006",
@@ -78,11 +134,23 @@
       "title": "Fake Windows Security Alert Popup",
       "raw_report": "my mom got a popup saying her computer was infected and to call microsoft support number. she almost called",
       "severity": "high",
-      "location": { "neighborhood": "Northgate", "zip": "94107" },
+      "location": {
+        "neighborhood": "Northgate",
+        "zip": "94107"
+      },
       "verified": true,
       "ai_summary": null,
-      "tags": ["malware", "tech-support-scam", "popup"],
-      "action_checklist": ["Close browser immediately", "Do NOT call the number", "Run legitimate antivirus scan", "Microsoft never calls unsolicited"]
+      "tags": [
+        "malware",
+        "tech-support-scam",
+        "popup"
+      ],
+      "action_checklist": [
+        "Close browser immediately",
+        "Do NOT call the number",
+        "Run legitimate antivirus scan",
+        "Microsoft never calls unsolicited"
+      ]
     },
     {
       "id": "INC-007",
@@ -92,11 +160,23 @@
       "title": "Porch Piracy Surge",
       "raw_report": "someone stole amazon packages from 3 houses on my street today caught on ring camera",
       "severity": "medium",
-      "location": { "neighborhood": "Elm District", "zip": "94103" },
+      "location": {
+        "neighborhood": "Elm District",
+        "zip": "94103"
+      },
       "verified": true,
       "ai_summary": null,
-      "tags": ["theft", "package", "porch-piracy"],
-      "action_checklist": ["Require signature on deliveries", "Use Amazon locker", "Share Ring footage with neighbors", "File police report online"]
+      "tags": [
+        "theft",
+        "package",
+        "porch-piracy"
+      ],
+      "action_checklist": [
+        "Require signature on deliveries",
+        "Use Amazon locker",
+        "Share Ring footage with neighbors",
+        "File police report online"
+      ]
     },
     {
       "id": "INC-008",
@@ -106,11 +186,22 @@
       "title": "Rogue WiFi Hotspot at Coffee Shop",
       "raw_report": "saw a wifi network called 'BrewHouse_Free' at brewhouse cafe but the real one is 'BrewHouse_Guest'. classic evil twin attack",
       "severity": "high",
-      "location": { "neighborhood": "Arts Quarter", "zip": "94108" },
+      "location": {
+        "neighborhood": "Arts Quarter",
+        "zip": "94108"
+      },
       "verified": false,
       "ai_summary": null,
-      "tags": ["wifi", "evil-twin", "network-security"],
-      "action_checklist": ["Always verify WiFi name with staff", "Use VPN on public WiFi", "Avoid banking on public networks"]
+      "tags": [
+        "wifi",
+        "evil-twin",
+        "network-security"
+      ],
+      "action_checklist": [
+        "Always verify WiFi name with staff",
+        "Use VPN on public WiFi",
+        "Avoid banking on public networks"
+      ]
     },
     {
       "id": "INC-009",
@@ -120,11 +211,23 @@
       "title": "Utility Impersonation Scam",
       "raw_report": "man knocked on door saying he was from PG&E needed to check meter or power would be cut. asked for cash to clear debt. fake!",
       "severity": "high",
-      "location": { "neighborhood": "Riverside", "zip": "94109" },
+      "location": {
+        "neighborhood": "Riverside",
+        "zip": "94109"
+      },
       "verified": true,
       "ai_summary": null,
-      "tags": ["impersonation", "utility-scam", "in-person"],
-      "action_checklist": ["Ask for official ID badge", "Call utility company directly to verify", "Do not let in without verification", "Call 911 if threatened"]
+      "tags": [
+        "impersonation",
+        "utility-scam",
+        "in-person"
+      ],
+      "action_checklist": [
+        "Ask for official ID badge",
+        "Call utility company directly to verify",
+        "Do not let in without verification",
+        "Call 911 if threatened"
+      ]
     },
     {
       "id": "INC-010",
@@ -134,11 +237,651 @@
       "title": "Romance Scam Targeting Seniors",
       "raw_report": "my grandmother was almost scammed by someone on facebook claiming to be a military officer. asked for gift cards for flight home",
       "severity": "high",
-      "location": { "neighborhood": "Sunnyvale Heights", "zip": "94110" },
+      "location": {
+        "neighborhood": "Sunnyvale Heights",
+        "zip": "94110"
+      },
       "verified": true,
       "ai_summary": null,
-      "tags": ["romance-scam", "seniors", "social-media", "gift-card"],
-      "action_checklist": ["Never send money to someone you haven't met", "Reverse image search their photos", "Report to FBI IC3 at ic3.gov", "Talk to trusted family member"]
+      "tags": [
+        "romance-scam",
+        "seniors",
+        "social-media",
+        "gift-card"
+      ],
+      "action_checklist": [
+        "Never send money to someone you haven't met",
+        "Reverse image search their photos",
+        "Report to FBI IC3 at ic3.gov",
+        "Talk to trusted family member"
+      ]
+    },
+    {
+      "id": "INC-011",
+      "timestamp": "2025-03-05T08:30:00Z",
+      "type": "physical",
+      "category": "infrastructure",
+      "title": "Downed Power Line",
+      "raw_report": "Huge tree branch fell on power lines on 4th street during the storm. Sparks everywhere, power is out.",
+      "severity": "high",
+      "location": {
+        "neighborhood": "Midtown",
+        "zip": "94104"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "infrastructure",
+        "power-outage",
+        "storm"
+      ],
+      "action_checklist": [
+        "Do not approach downed lines",
+        "Call 911 immediately if sparking",
+        "Use flashlights, not candles"
+      ]
+    },
+    {
+      "id": "INC-012",
+      "timestamp": "2025-03-04T19:00:00Z",
+      "type": "digital",
+      "category": "malware",
+      "title": "Crypto Investment Scam Group",
+      "raw_report": "Was added to a WhatsApp group promising guaranteed returns on crypto. They ask for an initial deposit of $1k. Total scam.",
+      "severity": "medium",
+      "location": {
+        "neighborhood": "Downtown",
+        "zip": "94102"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "scam",
+        "crypto",
+        "whatsapp"
+      ],
+      "action_checklist": [
+        "Leave and report the group",
+        "Never send crypto to unverified addresses",
+        "Block the admins"
+      ]
+    },
+    {
+      "id": "INC-013",
+      "timestamp": "2025-03-04T12:15:00Z",
+      "type": "physical",
+      "category": "vehicle",
+      "title": "Car Window Smash-and-Grab",
+      "raw_report": "Left my backpack in the backseat for 10 mins. Came back to a smashed window near the local park.",
+      "severity": "medium",
+      "location": {
+        "neighborhood": "Marina",
+        "zip": "94123"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "theft",
+        "vehicle",
+        "break-in"
+      ],
+      "action_checklist": [
+        "Never leave bags visible in car",
+        "Park in secure or busy areas",
+        "File police report for insurance"
+      ]
+    },
+    {
+      "id": "INC-014",
+      "timestamp": "2025-03-03T16:40:00Z",
+      "type": "digital",
+      "category": "phishing",
+      "title": "Fake Delivery Notification SMS",
+      "raw_report": "Received a text claiming USPS couldn't deliver my package and I need to pay a $2 redelivery fee via a sketchy link.",
+      "severity": "low",
+      "location": {
+        "neighborhood": "Castro",
+        "zip": "94114"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "phishing",
+        "sms",
+        "delivery-scam"
+      ],
+      "action_checklist": [
+        "Do not click the link",
+        "Check tracking directly on USPS.com",
+        "Forward text to 7726 (SPAM)"
+      ]
+    },
+    {
+      "id": "INC-015",
+      "timestamp": "2025-03-03T09:20:00Z",
+      "type": "digital",
+      "category": "data_breach",
+      "title": "Local Pharmacy Cyberattack",
+      "raw_report": "TownCare Pharmacy sent a letter saying patient records might have been accessed in a ransomware attack last month.",
+      "severity": "high",
+      "location": {
+        "neighborhood": "Sunset",
+        "zip": "94122"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "data-breach",
+        "medical",
+        "ransomware"
+      ],
+      "action_checklist": [
+        "Monitor medical insurance statements",
+        "Watch for medical identity theft",
+        "Change pharmacy login password"
+      ]
+    },
+    {
+      "id": "INC-016",
+      "timestamp": "2025-03-02T15:20:00Z",
+      "type": "physical",
+      "category": "infrastructure",
+      "title": "Gas Leak Suspected",
+      "raw_report": "Strong smell of rotten eggs near the corner of 10th and Maple. PG&E trucks are arriving now.",
+      "severity": "high",
+      "location": {
+        "neighborhood": "Downtown",
+        "zip": "94102"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "infrastructure",
+        "gas-leak",
+        "hazard"
+      ],
+      "action_checklist": [
+        "Leave the area immediately if smell is strong",
+        "Do not use electronics or light matches",
+        "Call 911 from a safe distance"
+      ]
+    },
+    {
+      "id": "INC-017",
+      "timestamp": "2025-03-02T10:45:00Z",
+      "type": "digital",
+      "category": "phishing",
+      "title": "Bank Impersonation Text",
+      "raw_report": "Got a text from 'Chase' saying my account is locked due to unusual activity. Link looks like chace-support.com instead of chase.",
+      "severity": "medium",
+      "location": {
+        "neighborhood": "Westside",
+        "zip": "94105"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "phishing",
+        "sms",
+        "banking"
+      ],
+      "action_checklist": [
+        "Do not click the link",
+        "Login directly via the official bank app",
+        "Forward SMS to 7726 or report to bank"
+      ]
+    },
+    {
+      "id": "INC-018",
+      "timestamp": "2025-03-01T22:30:00Z",
+      "type": "physical",
+      "category": "scam",
+      "title": "Fake Charity Door-to-Door",
+      "raw_report": "Couple going door-to-door asking for cash donations for local school sports team. School confirmed they have no such drive.",
+      "severity": "low",
+      "location": {
+        "neighborhood": "Sunnyvale Heights",
+        "zip": "94110"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "scam",
+        "in-person",
+        "charity"
+      ],
+      "action_checklist": [
+        "Always verify charities directly",
+        "Never give cash at the door",
+        "Report suspicious solicitors to non-emergency line"
+      ]
+    },
+    {
+      "id": "INC-019",
+      "timestamp": "2025-03-01T14:15:00Z",
+      "type": "digital",
+      "category": "wifi_security",
+      "title": "Unsecured Public Library Network",
+      "raw_report": "The public library wifi is entirely unencrypted now. Anyone can intercept traffic if they are on the same network.",
+      "severity": "medium",
+      "location": {
+        "neighborhood": "Midtown",
+        "zip": "94104"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "wifi",
+        "public-network",
+        "unencrypted"
+      ],
+      "action_checklist": [
+        "Use a VPN for all traffic",
+        "Avoid logging into sensitive accounts",
+        "Ensure sites use HTTPS"
+      ]
+    },
+    {
+      "id": "INC-020",
+      "timestamp": "2025-02-28T09:00:00Z",
+      "type": "digital",
+      "category": "data_breach",
+      "title": "School District Portal Breach",
+      "raw_report": "Local school district sent notices that the parent portal was breached. Student names and emergency contacts were accessed.",
+      "severity": "high",
+      "location": {
+        "neighborhood": "Elm District",
+        "zip": "94103"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "data-breach",
+        "school",
+        "personal-info"
+      ],
+      "action_checklist": [
+        "Change portal password immediately",
+        "Enable 2FA if available",
+        "Be alert for targeted phishing emails"
+      ]
+    },
+    {
+      "id": "INC-021",
+      "timestamp": "2025-02-28T16:45:00Z",
+      "type": "physical",
+      "category": "package_theft",
+      "title": "Mailbox Fishing in Apartment Complex",
+      "raw_report": "Someone is using a string and sticky tape to pull mail out of the outgoing mail slot in our building lobby.",
+      "severity": "medium",
+      "location": {
+        "neighborhood": "Arts Quarter",
+        "zip": "94108"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "theft",
+        "mail",
+        "apartment"
+      ],
+      "action_checklist": [
+        "Drop outgoing mail directly at post office",
+        "Retrieve incoming mail promptly",
+        "Report to building management"
+      ]
+    },
+    {
+      "id": "INC-022",
+      "timestamp": "2025-02-27T11:20:00Z",
+      "type": "digital",
+      "category": "malware",
+      "title": "Malicious PDF Attachment",
+      "raw_report": "Receiving emails with subject 'Invoice Overdue' containing a PDF that tries to download an executable when opened.",
+      "severity": "high",
+      "location": {
+        "neighborhood": "Riverside",
+        "zip": "94109"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "malware",
+        "email",
+        "attachment"
+      ],
+      "action_checklist": [
+        "Never open unexpected attachments",
+        "Use an updated antivirus",
+        "Verify invoices with sender via phone"
+      ]
+    },
+    {
+      "id": "INC-023",
+      "timestamp": "2025-02-27T08:10:00Z",
+      "type": "physical",
+      "category": "vehicle",
+      "title": "Tire Slashing Incident",
+      "raw_report": "Three cars parked on 2nd Ave had their tires slashed overnight. Looks like vandalism rather than theft.",
+      "severity": "medium",
+      "location": {
+        "neighborhood": "Oak District",
+        "zip": "94106"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "vandalism",
+        "vehicle",
+        "property-damage"
+      ],
+      "action_checklist": [
+        "Park in secure garages if possible",
+        "Check for security camera footage",
+        "File police report for insurance"
+      ]
+    },
+    {
+      "id": "INC-024",
+      "timestamp": "2025-02-26T18:30:00Z",
+      "type": "digital",
+      "category": "romance_scam",
+      "title": "Dating App Investment Scam",
+      "raw_report": "Matched with someone on Tinder who immediately wanted to talk about crypto investments and move to WhatsApp.",
+      "severity": "high",
+      "location": {
+        "neighborhood": "Marina",
+        "zip": "94123"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "romance-scam",
+        "dating-app",
+        "crypto",
+        "pig-butchering"
+      ],
+      "action_checklist": [
+        "Never take investment advice from dating app matches",
+        "Do not move conversation off-platform immediately",
+        "Report the profile to the app"
+      ]
+    },
+    {
+      "id": "INC-025",
+      "timestamp": "2025-02-26T13:00:00Z",
+      "type": "physical",
+      "category": "scam",
+      "title": "Grandparent Bail Scam Call",
+      "raw_report": "Grandfather got a call from someone claiming to be me needing bail money. They spoofed my area code.",
+      "severity": "high",
+      "location": {
+        "neighborhood": "Sunset",
+        "zip": "94122"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "scam",
+        "phone",
+        "seniors",
+        "impersonation"
+      ],
+      "action_checklist": [
+        "Hang up and call the family member directly",
+        "Establish a family safe word",
+        "Never wire money or send gift cards to strangers"
+      ]
+    },
+    {
+      "id": "INC-026",
+      "timestamp": "2025-02-25T09:45:00Z",
+      "type": "digital",
+      "category": "phishing",
+      "title": "Fake Job Offer Scam",
+      "raw_report": "Got an unsolicited job offer on LinkedIn for data entry paying $50/hr. They want me to buy my own equipment from their 'approved vendor' with a fake check.",
+      "severity": "medium",
+      "location": {
+        "neighborhood": "Northgate",
+        "zip": "94107"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "phishing",
+        "job-scam",
+        "fake-check"
+      ],
+      "action_checklist": [
+        "Legitimate employers don't ask you to pay for equipment upfront",
+        "Verify company existence independently",
+        "Report the listing/message via the platform"
+      ]
+    },
+    {
+      "id": "INC-027",
+      "timestamp": "2025-02-25T17:15:00Z",
+      "type": "physical",
+      "category": "infrastructure",
+      "title": "Major Traffic Light Outage",
+      "raw_report": "All traffic lights at the intersection of Market and 5th are completely out. Traffic is extremely dangerous.",
+      "severity": "high",
+      "location": {
+        "neighborhood": "Downtown",
+        "zip": "94102"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "infrastructure",
+        "traffic",
+        "safety-hazard"
+      ],
+      "action_checklist": [
+        "Treat as a four-way stop",
+        "Avoid the intersection if possible",
+        "Report to city 311 services"
+      ]
+    },
+    {
+      "id": "INC-028",
+      "timestamp": "2025-02-24T11:30:00Z",
+      "type": "digital",
+      "category": "data_breach",
+      "title": "Parking App Data Leak",
+      "raw_report": "The EasyPark app sent an alert that passwords might have been compromised. They are forcing a reset.",
+      "severity": "medium",
+      "location": {
+        "neighborhood": "Midtown",
+        "zip": "94104"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "data-breach",
+        "app",
+        "password"
+      ],
+      "action_checklist": [
+        "Change password on EasyPark",
+        "Change password on any other site using the same credentials",
+        "Use a password manager"
+      ]
+    },
+    {
+      "id": "INC-029",
+      "timestamp": "2025-02-24T14:45:00Z",
+      "type": "physical",
+      "category": "vehicle",
+      "title": "License Plate Theft",
+      "raw_report": "Noticed my rear license plate was swapped with another one. Probably used for toll evasion or worse.",
+      "severity": "medium",
+      "location": {
+        "neighborhood": "Elm District",
+        "zip": "94103"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "theft",
+        "vehicle",
+        "license-plate"
+      ],
+      "action_checklist": [
+        "Report stolen plate to DMV/police immediately",
+        "Use security screws for plates",
+        "Check for toll evasion notices"
+      ]
+    },
+    {
+      "id": "INC-030",
+      "timestamp": "2025-02-23T10:10:00Z",
+      "type": "digital",
+      "category": "wifi_security",
+      "title": "Hotel WiFi Intercept",
+      "raw_report": "Connected to Grand Hotel WiFi and my browser warned about an invalid security certificate. Someone might be trying a man-in-the-middle attack.",
+      "severity": "high",
+      "location": {
+        "neighborhood": "Downtown",
+        "zip": "94102"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "wifi",
+        "hotel",
+        "mitm"
+      ],
+      "action_checklist": [
+        "Disconnect immediately",
+        "Do not ignore browser certificate warnings",
+        "Use cellular data or a trusted VPN"
+      ]
+    },
+    {
+      "id": "INC-031",
+      "timestamp": "2025-02-23T16:20:00Z",
+      "type": "physical",
+      "category": "package_theft",
+      "title": "Follow-Home Delivery Theft",
+      "raw_report": "A car was following the FedEx truck and stealing packages right after they were dropped off on porches in my neighborhood.",
+      "severity": "high",
+      "location": {
+        "neighborhood": "Sunnyvale Heights",
+        "zip": "94110"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "theft",
+        "package",
+        "coordinated"
+      ],
+      "action_checklist": [
+        "Retrieve packages immediately if home",
+        "Schedule deliveries for times you are present",
+        "Report suspicious vehicles following delivery trucks"
+      ]
+    },
+    {
+      "id": "INC-032",
+      "timestamp": "2025-02-22T08:50:00Z",
+      "type": "digital",
+      "category": "malware",
+      "title": "Fake Antivirus Renewal",
+      "raw_report": "Received an email saying my Norton subscription auto-renewed for $399. Called the number in the email and they wanted remote access to my PC to 'refund' me.",
+      "severity": "high",
+      "location": {
+        "neighborhood": "Westside",
+        "zip": "94105"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "malware",
+        "tech-support",
+        "refund-scam"
+      ],
+      "action_checklist": [
+        "Never call numbers from unsolicited emails",
+        "Never give remote access to unexpected callers",
+        "Check official accounts directly"
+      ]
+    },
+    {
+      "id": "INC-033",
+      "timestamp": "2025-02-22T21:15:00Z",
+      "type": "physical",
+      "category": "scam",
+      "title": "Fake Parking Attendant",
+      "raw_report": "Someone in a generic orange vest was charging $20 cash for parking at the public free lot near the stadium.",
+      "severity": "low",
+      "location": {
+        "neighborhood": "Marina",
+        "zip": "94123"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "scam",
+        "in-person",
+        "parking"
+      ],
+      "action_checklist": [
+        "Look for official city signage",
+        "Never pay cash to uncredentialed individuals",
+        "Report to local authorities"
+      ]
+    },
+    {
+      "id": "INC-034",
+      "timestamp": "2025-02-21T11:05:00Z",
+      "type": "digital",
+      "category": "romance_scam",
+      "title": "Catfishing Extortion",
+      "raw_report": "Friend met someone online, exchanged compromising photos, and now the person is demanding $5,000 or they'll send them to his family.",
+      "severity": "high",
+      "location": {
+        "neighborhood": "Castro",
+        "zip": "94114"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "romance-scam",
+        "extortion",
+        "social-media"
+      ],
+      "action_checklist": [
+        "Do not pay the ransom - it never stops",
+        "Stop all communication and block the scammer",
+        "Report to the FBI IC3"
+      ]
+    },
+    {
+      "id": "INC-035",
+      "timestamp": "2025-02-21T15:30:00Z",
+      "type": "physical",
+      "category": "infrastructure",
+      "title": "Sinkhole Developing",
+      "raw_report": "There is a massive depression forming in the road on Pine between 7th and 8th. Asphalt is cracking badly around it.",
+      "severity": "high",
+      "location": {
+        "neighborhood": "Arts Quarter",
+        "zip": "94108"
+      },
+      "verified": true,
+      "ai_summary": null,
+      "tags": [
+        "infrastructure",
+        "road-hazard",
+        "sinkhole"
+      ],
+      "action_checklist": [
+        "Avoid driving or walking near the area",
+        "Report immediately to city 311",
+        "Warn neighbors"
+      ]
     }
   ],
   "noise_filtered": [

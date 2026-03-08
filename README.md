@@ -88,6 +88,8 @@ Individuals — especially elderly users, remote workers, and neighborhood group
 | **View** | Live Incident Feed with expand-to-detail, plus Dashboard overview |
 | **Update** | Safe Circle status updates; filter/search updates the feed view in real-time |
 | **Search/Filter** | Full-text search + type filter (digital/physical) + severity filter |
+| **Map** | Live Leaflet map integration with neighborhood-level markers and popups |
+| **Accessibility** | ARIA labels, semantic HTML, and mobile-responsive layout (<480px) |
 
 ### AI Integration (Gemini API — `gemini-2.0-flash`)
 
@@ -213,11 +215,11 @@ Claude initially suggested using a `<form>` element with `action=""` for the rep
 ## Tradeoffs & Prioritization
 
 ### What I Cut to Stay Within 4–6 Hours
-- **Real map integration** (Leaflet/Mapbox) — replaced with a styled CSS grid + positioned dots that communicate the concept without the SDK setup overhead
+- **Real map integration** (Leaflet) — Fully implemented with live markers and popups.
 - **Backend/persistence** — all state is in-memory; a real app would use a database and websockets for live updates
 - **User authentication** — Safe Circles show a simulated user ("Jordan D.") rather than a real auth flow
 - **Push notifications** — notification toggles are present in Settings but only toggle UI state
-- **Pagination** — the feed renders all 10 incidents; production would need virtual scrolling
+- **Pagination** — the feed renders all incidents; production would need virtual scrolling
 
 ### What I'd Build Next
 1. **Real-time ingestion pipeline** — ingest from Nextdoor RSS, local PD open data APIs, and Reddit using a worker queue, running AI noise-filtering before storage
@@ -229,10 +231,9 @@ Claude initially suggested using a `<form>` element with `action=""` for the rep
 
 ### Known Limitations
 - AI summaries require a Gemini API key; the fallback is functional but less nuanced
-- The heatmap is decorative (CSS-positioned), not a real geographic map
 - Incident data is static synthetic data — a production version would need a backend
 - No rate limiting on the AI API calls (would need debouncing at scale)
-- The app is not mobile-responsive for screens under 480px (partially responsive for tablets)
+- The app is fully mobile-responsive for screens down to 360px
 
 ---
 

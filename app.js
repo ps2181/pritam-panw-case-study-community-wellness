@@ -161,17 +161,15 @@ function saveAndRefreshLocation() {
 
   if (leafletMap) {
     leafletMap.setView([userLocation.lat, userLocation.lng], 12);
+    clearMapMarkers();
+    // Re-add existing incidents that are within the new radius
+    localIncidents.forEach(inc => addMapMarker(inc));
   }
 
   showToast('info', `📍 Location set to ${userLocation.name}`);
 
   // Trigger re-fetch
-  fetchUSGSEarthquakes();
-  fetchNWSAlerts();
-  // New ones will go here
-  fetchFDARecalls();
-  fetchFEMADisasters();
-  fetchAirQuality();
+  fetchAllLiveData();
 }
 
 async function detectLocation() {
@@ -903,6 +901,10 @@ function initMap() {
 
 function addMapMarker(inc) {
   if (!leafletMap || !inc.location.lat) return;
+
+  // Prevent duplicate markers if switching locations/radius
+  if (mapMarkers.some(m => m._incId === inc.id)) return;
+
   const colors = { high: '#ff4757', medium: '#ff9f43', low: '#2ed573' };
   const color = colors[inc.severity] || '#00e5ff';
 
@@ -911,8 +913,15 @@ function addMapMarker(inc) {
     fillColor: color, color: color, weight: 2, opacity: 0.8, fillOpacity: 0.5
   }).addTo(leafletMap);
 
+  marker._incId = inc.id;
   marker.bindPopup(`<div class="popup-title">${inc.title}</div><div class="popup-meta">📍 ${inc.location.neighborhood} · ${inc.severity.toUpperCase()} · ${relativeTime(inc.timestamp)}</div>`);
   mapMarkers.push(marker);
+}
+
+function clearMapMarkers() {
+  if (!leafletMap) return;
+  mapMarkers.forEach(m => leafletMap.removeLayer(m));
+  mapMarkers = [];
 }
 
 // ─── REAL-TIME ENGINE ────────────────────────────────────────────────────────
@@ -954,228 +963,15 @@ function pushRealtimeIncident() {
 }
 
 function startRealtimeEngine() {
-  const interval = 120000 + Math.random() * 60000; // 2-3 minutes (reduced from 30-60s)
+  const interval = 120000 + Math.random() * 60000; // 2-3 minutes
   realtimeInterval = setInterval(() => {
-    // Only generate synthetic data if real data is sparse
-    const realCount = localIncidents.filter(i => i.source && i.source.endsWith('-api')).length;
-    const syntheticCount = localIncidents.filter(i => i.source === 'community' || i.source === 'news').length;
-
-    if (realCount < 5 || (syntheticCount < 3 && Math.random() > 0.7)) {
-      pushRealtimeIncident();
-    }
+    // Generate synthetic data periodically
+    pushRealtimeIncident();
   }, interval);
 }
 
 // ─── LIVE DATA FEEDS ─────────────────────────────────────────────────────────
-async function fetchUSGSEarthquakes() {
-  try {
-    const res = await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson');
-    if (!res.ok) return;
-    const data = await res.json();
-
-    // Filter by distance from userLocation
-    const radiusDeg = userLocation.radius / 69; // Rough conversion miles to degrees
-    const sfQuakes = data.features.filter(f => {
-      const [lng, lat] = f.geometry.coordinates;
-      return Math.abs(lat - userLocation.lat) < radiusDeg && Math.abs(lng - userLocation.lng) < radiusDeg;
-    }).slice(0, 5);
-
-    sfQuakes.forEach(f => {
-      const [lng, lat] = f.geometry.coordinates;
-      const mag = f.properties.mag;
-      const sev = mag >= 4.5 ? 'high' : mag >= 3 ? 'medium' : 'low';
-      const inc = {
-        id: 'USGS-' + f.id,
-        timestamp: new Date(f.properties.time).toISOString(),
-        type: 'physical', category: 'infrastructure',
-        title: `M${mag.toFixed(1)} Earthquake — ${f.properties.place || 'Local Area'}`,
-        severity: sev,
-        location: { neighborhood: f.properties.place || 'Local Area', lat, lng },
-        verified: true, tags: ['earthquake', 'usgs', 'seismic'], source: 'usgs-api',
-        action_checklist: ['Drop, Cover, Hold On', 'Check for gas leaks', 'Monitor aftershocks', 'Have emergency kit ready']
-      };
-      if (!localIncidents.find(i => i.id === inc.id)) {
-        localIncidents.unshift(inc);
-        addMapMarker(inc);
-      }
-    });
-    renderFeed();
-  } catch { /* USGS unavailable — silent fail */ }
-}
-
-async function fetchNWSAlerts() {
-  try {
-    const res = await fetch(`https://api.weather.gov/alerts/active?area=${userLocation.state}&limit=10`, {
-      headers: { 'User-Agent': 'CommunityGuardian/1.0 (safety-app)' }
-    });
-    if (!res.ok) return;
-    const data = await res.json();
-
-    (data.features || []).slice(0, 5).forEach(f => {
-      const props = f.properties;
-      const sev = props.severity === 'Extreme' || props.severity === 'Severe' ? 'high' : props.severity === 'Moderate' ? 'medium' : 'low';
-      const inc = {
-        id: 'NWS-' + (props.id || '').slice(-8),
-        timestamp: props.effective || new Date().toISOString(),
-        type: 'physical', category: 'infrastructure',
-        title: `⛈ ${props.event || 'Weather Alert'} — ${props.areaDesc?.split(';')[0] || 'Local Area'}`,
-        severity: sev,
-        location: { neighborhood: props.areaDesc?.split(';')[0] || 'Local Area', lat: userLocation.lat + (Math.random() - 0.5) * 0.1, lng: userLocation.lng + (Math.random() - 0.5) * 0.1 },
-        verified: true, tags: ['weather', 'nws', 'alert'], source: 'nws-api',
-        action_checklist: ['Monitor weather updates', 'Prepare emergency supplies', 'Follow evacuation orders if issued', 'Check on neighbors']
-      };
-      if (!localIncidents.find(i => i.id === inc.id)) {
-        localIncidents.unshift(inc);
-        addMapMarker(inc);
-      }
-    });
-    renderFeed();
-  } catch { /* NWS unavailable — silent fail */ }
-}
-
-async function fetchFDARecalls() {
-  try {
-    const res = await fetch(`https://api.fda.gov/food/enforcement.json?limit=5&sort=report_date:desc&search=state:"${userLocation.state}"`);
-    if (!res.ok) return;
-    const data = await res.json();
-
-    (data.results || []).forEach(r => {
-      const sev = r.classification === 'Class I' ? 'high' : r.classification === 'Class II' ? 'medium' : 'low';
-      const inc = {
-        id: 'FDA-' + r.recall_number.replace(/\//g, '-'),
-        timestamp: new Date(r.report_date).toISOString(),
-        type: 'digital', category: 'phishing', // Mapping to digital/phishing as a proxy for "consumer alert"
-        title: `🛑 FDA Recall: ${r.product_description.slice(0, 50)}...`,
-        severity: sev,
-        location: { neighborhood: r.city || 'Statewide', lat: userLocation.lat, lng: userLocation.lng },
-        verified: true, tags: ['recall', 'fda', 'safety'], source: 'fda-api',
-        action_checklist: ['Check your pantry for this product', 'Dispose of item immediately', 'Contact retailer for refund']
-      };
-      if (!localIncidents.find(i => i.id === inc.id)) {
-        localIncidents.unshift(inc);
-        addMapMarker(inc);
-      }
-    });
-    renderFeed();
-  } catch { /* FDA unavailable */ }
-}
-
-async function fetchFEMADisasters() {
-  try {
-    const res = await fetch(`https://www.fema.gov/api/open/v2/DisasterDeclarationsSummaries?$filter=state eq '${userLocation.state}'&$top=3&$orderby=declarationDate desc`);
-    if (!res.ok) return;
-    const data = await res.json();
-
-    (data.DisasterDeclarationsSummaries || []).forEach(d => {
-      const sev = d.incidentType === 'Fire' || d.incidentType === 'Flood' ? 'high' : 'medium';
-      const inc = {
-        id: 'FEMA-' + d.disasterNumber,
-        timestamp: new Date(d.declarationDate).toISOString(),
-        type: 'physical', category: 'infrastructure',
-        title: `🏛 FEMA Declaration: ${d.declarationTitle}`,
-        severity: sev,
-        location: { neighborhood: d.declaredCountyArea || 'Statewide', lat: userLocation.lat, lng: userLocation.lng },
-        verified: true, tags: ['fema', 'disaster', 'declaration'], source: 'fema-api',
-        action_checklist: ['Monitor local emergency broadcasts', 'Check FEMA.gov for assistance', 'Follow evacuation orders']
-      };
-      if (!localIncidents.find(i => i.id === inc.id)) {
-        localIncidents.unshift(inc);
-        addMapMarker(inc);
-      }
-    });
-    renderFeed();
-  } catch { /* FEMA unavailable */ }
-}
-
-async function fetchAirQuality() {
-  try {
-    // Using OpenAQ is reliable and CORS-friendly
-    const res = await fetch(`https://api.openaq.org/v2/latest?coordinates=${userLocation.lat},${userLocation.lng}&radius=50000&limit=1`);
-    if (!res.ok) return;
-    const data = await res.json();
-
-    if (data.results && data.results.length > 0) {
-      const r = data.results[0];
-      const pm25 = r.measurements.find(m => m.parameter === 'pm25');
-      if (pm25) {
-        let sev = 'low';
-        if (pm25.value > 150) sev = 'high';
-        else if (pm25.value > 100) sev = 'medium';
-
-        const inc = {
-          id: 'AQ-' + r.location,
-          timestamp: new Date().toISOString(),
-          type: 'physical', category: 'infrastructure',
-          title: `🌫 Air Quality Alert: PM2.5 at ${pm25.value.toFixed(1)} ${pm25.unit}`,
-          severity: sev,
-          location: { neighborhood: r.location, lat: r.coordinates.latitude, lng: r.coordinates.longitude },
-          verified: true, tags: ['air-quality', 'pollution', 'environment'], source: 'openaq-api',
-          action_checklist: ['Reduce outdoor activity', 'Close windows', 'Use air purifiers']
-        };
-        if (!localIncidents.find(i => i.id === inc.id)) {
-          localIncidents.unshift(inc);
-          addMapMarker(inc);
-        }
-      }
-    }
-    renderFeed();
-  } catch { /* AQ unavailable */ }
-}
-
-async function fetchCVEData() {
-  try {
-    const res = await fetch('https://cve.circl.lu/api/last');
-    if (!res.ok) return;
-    const data = await res.json();
-
-    (data || []).slice(0, 5).forEach(cve => {
-      // Support both old and new CIRCL API schemas
-      const id = cve.id || cve.cveMetadata?.cveId;
-      if (!id) return;
-
-      let cvss = 0;
-      if (cve.cvss) {
-        cvss = parseFloat(cve.cvss);
-      } else if (cve.containers?.cna?.metrics) {
-        // Try to find any CVSS score in the metrics array
-        for (const metric of cve.containers.cna.metrics) {
-          const score = metric.cvssV4_0?.baseScore || metric.cvssV3_1?.baseScore || metric.cvssV3_0?.baseScore || metric.cvssV2_0?.baseScore;
-          if (score !== undefined) {
-            cvss = parseFloat(score);
-            break;
-          }
-        }
-      }
-
-      const summary = cve.Summary || cve.containers?.cna?.descriptions?.[0]?.value || 'No technical summary available.';
-      const sev = cvss >= 7.0 ? 'high' : cvss >= 4.0 ? 'medium' : 'low';
-
-      const inc = {
-        id: id,
-        timestamp: new Date(cve.Modified || cve.Published || cve.cveMetadata?.dateUpdated || cve.cveMetadata?.datePublished || new Date()).toISOString(),
-        type: 'digital', category: 'vulnerability',
-        title: `🚨 Vulnerability: ${id} (${summary.slice(0, 40)}...)`,
-        severity: sev,
-        location: { neighborhood: 'Global Intelligence', lat: userLocation.lat + (Math.random() - 0.5) * 0.05, lng: userLocation.lng + (Math.random() - 0.5) * 0.05 },
-        verified: true, tags: ['cve', 'vulnerability', 'cyber-security'], source: 'circl-cve-api',
-        action_checklist: [
-          'Update affected software immediately',
-          'Review technical details at cve.org',
-          'Check for signs of active exploitation',
-          'Consult with your IT/security provider'
-        ]
-      };
-
-      if (!localIncidents.find(i => i.id === inc.id)) {
-        localIncidents.unshift(inc);
-        if (typeof addMapMarker === 'function') addMapMarker(inc);
-      }
-    });
-    if (typeof renderFeed === 'function') renderFeed();
-  } catch (err) {
-    console.error('CVE API Fetch Error:', err);
-  }
-}
+// Real-time API implementations have been removed to comply with synthetic data requirements.
 
 // ─── LIVE CLOCK & COUNTDOWN ──────────────────────────────────────────────────
 function startLiveClock() {
@@ -1201,12 +997,8 @@ function startLiveClock() {
 }
 
 function fetchAllLiveData() {
-  fetchUSGSEarthquakes();
-  fetchNWSAlerts();
-  fetchFDARecalls();
-  fetchFEMADisasters();
-  fetchAirQuality();
-  fetchCVEData();
+  // Use synthetic data only
+  console.log('Live APIs disabled to comply with synthetic data requirement.');
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────────

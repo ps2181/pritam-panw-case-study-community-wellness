@@ -185,6 +185,11 @@
       transition: all 0.2s;
     }
 
+    .ai-badge:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
     .ai-badge:hover {
       background: rgba(0, 229, 255, 0.12);
     }
@@ -1905,6 +1910,44 @@
         grid-template-columns: 1fr;
       }
     }
+
+    @media (max-width: 480px) {
+      .topbar {
+        padding: 0 12px;
+        height: auto;
+        min-height: 60px;
+        flex-direction: column;
+        align-items: flex-start;
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+
+      .topbar-right {
+        margin-left: 0;
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+
+      .page {
+        padding: 16px;
+      }
+
+      .page-title {
+        font-size: 24px;
+      }
+
+      .stat-value {
+        font-size: 28px;
+      }
+
+      .incident-card {
+        padding: 16px;
+      }
+    }
   </style>
 </head>
 
@@ -1942,43 +1985,44 @@
       </div>
 
       <div class="topbar-right">
-        <div class="status-pill">
+        <div class="status-pill" role="status" aria-live="polite">
           <div class="status-dot"></div>
           LIVE MONITORING
         </div>
-        <div class="ai-badge" id="aiBadge" onclick="toggleAIMode()">
+        <div class="ai-badge" id="aiBadge" onclick="toggleAIMode()" role="button" tabindex="0"
+          aria-label="Toggle AI Mode">
           ⚡ AI: ONLINE
         </div>
       </div>
     </header>
 
     <!-- SIDEBAR -->
-    <nav class="sidebar">
+    <nav class="sidebar" aria-label="Main Navigation">
       <div class="sidebar-section-label">Monitor</div>
-      <div class="nav-item active" onclick="showPage('dashboard')">
+      <div class="nav-item active" onclick="showPage('dashboard')" role="button" tabindex="0" aria-label="Dashboard">
         <span class="nav-icon">📊</span> Dashboard
       </div>
-      <div class="nav-item" onclick="showPage('feed')">
+      <div class="nav-item" onclick="showPage('feed')" role="button" tabindex="0" aria-label="Incident Feed">
         <span class="nav-icon">📡</span> Incident Feed
         <span class="nav-badge" id="incidentBadge">10</span>
       </div>
-      <div class="nav-item" onclick="showPage('digest')">
+      <div class="nav-item" onclick="showPage('digest')" role="button" tabindex="0" aria-label="AI Safety Digest">
         <span class="nav-icon">🤖</span> AI Safety Digest
       </div>
 
       <div class="sidebar-section-label">Community</div>
-      <div class="nav-item" onclick="showPage('circles')">
+      <div class="nav-item" onclick="showPage('circles')" role="button" tabindex="0" aria-label="Safe Circles">
         <span class="nav-icon">🔐</span> Safe Circles
       </div>
-      <div class="nav-item" onclick="showPage('report')">
+      <div class="nav-item" onclick="showPage('report')" role="button" tabindex="0" aria-label="Report Incident">
         <span class="nav-icon">📝</span> Report Incident
       </div>
 
       <div class="sidebar-section-label">Platform</div>
-      <div class="nav-item" onclick="showPage('noise')">
+      <div class="nav-item" onclick="showPage('noise')" role="button" tabindex="0" aria-label="Noise Filter">
         <span class="nav-icon">🔇</span> Noise Filter
       </div>
-      <div class="nav-item" onclick="showPage('settings')">
+      <div class="nav-item" onclick="showPage('settings')" role="button" tabindex="0" aria-label="Settings">
         <span class="nav-icon">⚙️</span> Settings
       </div>
 
