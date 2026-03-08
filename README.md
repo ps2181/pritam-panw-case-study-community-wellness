@@ -7,7 +7,9 @@
 ## Candidate Information
 
 **Candidate Name:** PRITAM SATPATHY 
+
 **Scenario Chosen:** Option 3 — Community Safety & Digital Wellness  
+
 **Estimated Time Spent:** ~5.5 hours  
 
 ---
